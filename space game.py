@@ -27,9 +27,7 @@ class MyShip(pg.sprite.Sprite):
         if (self.rect.top + dy * self.speed) > 0 and (self.rect.bottom + dy * self.speed) < HEIGHT:
             self.rect.y += dy * self.speed
 
-    def shot(self):
-        new_shot = Shot()
-
+    def
 
 class Shot(pg.sprite.Sprite):
 
