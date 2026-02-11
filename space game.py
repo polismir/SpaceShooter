@@ -18,6 +18,9 @@ class MyShip(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=(WIDTH * 1 / 2, HEIGHT - 100))
         self.mask = pg.mask.from_surface(self.image)
 
+    def change_skin(self):
+        self.image = pg.image.load(r"images/my_ship/myship_destroyed.png").convert_alpha()
+
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
@@ -27,7 +30,6 @@ class MyShip(pg.sprite.Sprite):
         if (self.rect.top + dy * self.speed) > 0 and (self.rect.bottom + dy * self.speed) < HEIGHT:
             self.rect.y += dy * self.speed
 
-    def
 
 class Shot(pg.sprite.Sprite):
 
@@ -95,6 +97,24 @@ class Meteors(pg.sprite.Sprite):
         self.rect.y += Meteors.speed
 
 
+class Heart(pg.sprite.Sprite):
+
+    def __init__(self, k):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.image.load(r"images/my_ship/heart.png").convert_alpha()
+        self.image = pg.transform.scale(self.image, (self.image.get_width() * 1 / 9, self.image.get_height() * 1 / 9))
+        if k == 1:
+            self.rect = self.image.get_rect(center=(WIDTH * 1 / 16, HEIGHT - 760))
+        if k == 2:
+            self.rect = self.image.get_rect(center=(WIDTH * 1 / 7, HEIGHT - 760))
+        if k == 3:
+            self.rect = self.image.get_rect(center=(WIDTH * 1 / 4.5, HEIGHT - 760))
+        self.active = True
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("Игра")
@@ -103,6 +123,9 @@ clock = pg.time.Clock()
 background = pg.image.load(r"images/cosmic_background.png")
 
 my_ship = MyShip()
+heart1 = Heart(1)
+heart2 = Heart(2)
+heart3 = Heart(3)
 enemy_ships = pg.sprite.Group()
 meteors = pg.sprite.Group()
 shots = pg.sprite.Group()
@@ -114,6 +137,9 @@ screen.blit(background, (0, 0))
 enemy_ships.draw(screen)
 my_ship.draw(screen)
 meteors.draw(screen)
+heart1.draw(screen)
+heart2.draw(screen)
+heart3.draw(screen)
 pg.display.update()
 
 cnt = 0
@@ -164,19 +190,41 @@ while flag_play:
     shots.draw(screen)
     my_ship.draw(screen)
     meteors.draw(screen)
+    if heart1.active:
+        heart1.draw(screen)
+    if heart2.active:
+        heart2.draw(screen)
+    if heart3.active:
+        heart3.draw(screen)
     pg.display.update()
 
 
     if pg.sprite.spritecollideany(my_ship, meteors, collided=pg.sprite.collide_mask):
-        s.play()
-        miliseconds = math.ceil(s.get_length()) * 1000
-        pg.time.wait(miliseconds)
-        break
+        if heart3.active:
+            heart3.active = False
+        elif heart2.active:
+            heart2.active = False
+        elif heart1.active:
+            heart1.active = False
+            s.play()
+            my_ship.change_skin()
+            miliseconds = math.ceil(s.get_length()) * 1000
+            pg.time.wait(miliseconds)
+            break
+        meteors.empty()
     if pg.sprite.spritecollideany(my_ship, enemy_ships, collided=pg.sprite.collide_mask):
-        s.play()
-        miliseconds = math.ceil(s.get_length()) * 1000
-        pg.time.wait(miliseconds)
-        break
+        if heart3.active:
+            heart3.active = False
+        elif heart2.active:
+            heart2.active = False
+        elif heart1.active:
+            heart1.active = False
+            s.play()
+            my_ship.change_skin()
+            miliseconds = math.ceil(s.get_length()) * 1000
+            pg.time.wait(miliseconds)
+            break
+        enemy_ships.empty()
     if pg.sprite.groupcollide(shots, meteors, True, True, collided=pg.sprite.collide_mask):
         pass
     if pg.sprite.groupcollide(shots, enemy_ships, True, True, collided=pg.sprite.collide_mask):
