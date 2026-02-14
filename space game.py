@@ -130,6 +130,8 @@ enemy_ships = pg.sprite.Group()
 meteors = pg.sprite.Group()
 shots = pg.sprite.Group()
 
+pg.mixer.music.load("music/background_music.wav")
+pg.mixer.music.play()
 s = pg.mixer.Sound("music/destructions_music.wav")
 shot_song = pg.mixer.Sound("music/shot_music.wav")
 
@@ -179,6 +181,7 @@ while flag_play:
         my_ship.update(dy=1)
     if keys[pg.K_SPACE] and cnt1 >= 60:
         shots.add(Shot())
+        shot_song.play()
         cnt1 = 0
 
     meteors.update()
